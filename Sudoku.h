@@ -11,7 +11,7 @@ public:
     void setQuestionMap(int index ,int value);
     int    getMap(int index );
     int    getQuestionMap(int index );
-    bool isPossibleAnswer(int index);
+    bool isPossibleAnswer(int index , int value);
     int getZeroIndex();
     void showMap();
     bool isSolvable();

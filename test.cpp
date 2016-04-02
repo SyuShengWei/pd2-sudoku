@@ -7,10 +7,10 @@ int main ()
 	Su.readIn();
 	Su.solve();
 	cout<<endl;
- 	Su.giveQuestion();
+ 	//Su.giveQuestion();
  	cout<<endl;
  	//Su.readIn();
-	Su.transform();
-	cout<<endl;	
+	//Su.transform();
+	cout<<endl;
 	return 0;
 }

@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include "Sudoku.h"
 using namespace std;
@@ -33,22 +34,22 @@ int Sudoku::getQuestionMap(int index)
 	return questionMap[index] ;
 }
 
-bool Sudoku::isPossibleAnswer(int index)
+bool Sudoku::isPossibleAnswer(int index , int value)
 {
 	int row , col , cell ;
 	row = index / 9;
 	col = index % 9 ;
 	cell = (row / 3 ) *  27  +(col / 3 ) * 3 ;
 	for(int i = 0 ; i < 9 ;  i++){
-		if(getQuestionMap(row*9 + i ) == getMap(index) )
+		if(getQuestionMap(row*9 + i ) == value )
 			return false ;
-		else if(getQuestionMap(col + i * 9 ) == getMap(index) )
+		else if(getQuestionMap(col + i * 9 ) == value)
 			return false ;
-		else if( (i+1) / 3 == 0 && getQuestionMap(cell + i ) == getMap(index))
+		else if( (i+1) / 3 == 0 && getQuestionMap(cell + i % 3 ) == value)
 			return false ;
-		else if( (i+1) / 3 == 1 && getQuestionMap(cell + 9 + i %3 ) == getMap(index))
+		else if( (i+1) / 3 == 1 && getQuestionMap(cell + 9 + i %3 ) == value)
 			return false ;
-		else if( (i+1) / 3 == 2 && getQuestionMap(cell + 18 + i %3) == getMap(index))
+		else if( (i+1) / 3 == 2 && getQuestionMap(cell + 18 + i %3) == value)
 			return false ;
 	}
 	return true ;
@@ -100,13 +101,36 @@ void Sudoku::giveQuestion()
 	showMap();
 }
 
-
+bool Sudoku::isSolvable()
+{
+    for(int i = 0 ; i < sudokuSize ; i++){
+        int row , col , cell ;
+        row = i / 9;
+        col = i % 9 ;
+        cell = (row / 3 ) *  27  +(col / 3 ) * 3 ;
+        if(map[i]){
+            for(int j = 0 ; j < 9 ;  j++){
+                if( map[row*9 + j ] == map[i]  && row*9 + j != i)
+                    return false ;
+                else if(map[col + j * 9 ] == map[i] && col + j * 9 != i)
+                    return false ;
+                else if( (i+1) / 3 == 0 && map[cell + j % 3 ] == map[i] && cell + j%3 != i )
+                    return false ;
+                else if( (i+1) / 3 == 1 && map[cell + 9 + j %3 ] == map[i]&& cell + j%3 +9!= i )
+                    return false ;
+                else if( (i+1) / 3 == 2 && map[cell + 18 + j %3] == map[i]&& cell + j%3 +18!= i )
+                    return false ;
+            }
+        }
+    }
+    return true ;
+}
 
 void Sudoku::readIn()
 {
 	for(int i = 0 ; i < sudokuSize ; ++i){
 		cin >>  map[i];
-		setQuestionMap(i,map[i]);		
+		setQuestionMap(i,map[i]);
 	}
 }
 
@@ -124,93 +148,52 @@ void Sudoku::solveFunction()
 		}
 		for(int i = 1 ; i <= 9 ; i++){
 			setMap(zeroIndex , i);
-			if(isPossibleAnswer(zeroIndex)){
+			if(isPossibleAnswer(zeroIndex,i)){
 				setQuestionMap(zeroIndex ,i);
 				solveFunction();
 			}
-			setQuestionMap(zeroIndex , 0); 
+			setQuestionMap(zeroIndex , 0);
 		}
 		setMap(zeroIndex , 0 );
-	}	
+	}
 }
 
 void Sudoku::solve(){
+  for(int i = 0 ; i < sudokuSize ; i++)
+    {
+        if(map[i])
+            nonZero++;
+    }
+    if(!isSolvable()){
+        cout<<"0"<<endl ;
+        return ;
+    }
+    else if(nonZero < 16) {
+        cout<<"2"<<endl;
+        return ;
+    }
+    else{
+        solveFunction();
+        //showMap() ;
+        if(numberOfAnswer == 0)
+            cout<<numberOfAnswer<<endl;
+        else if(numberOfAnswer == 1){
+            cout<<numberOfAnswer<<endl;
+            for(int i = 0 ; i < sudokuSize ; ++i)
+            {
+                cout<<answer[i]<<" ";
+                if (i%9 == 8)
+                    cout << endl;
+            }
 
-	int location ;
-	for(int i =0 ; i < sudokuSize ; i++){
-		if(map[i])
-			nonZero ++ ;
-		else{
-			for(int j = 0  ; j < 9 ; j++){
-				if(map[ (i/9) * 9 +j]  && !possibleNumber[i][map[(i/9)*9 + j] - 1 ] ){
-					howManyImPossible[i]++ ;
-					possibleNumber[i][map[(i/9)*9 + j] - 1 ] = true ;
-				}
-				if(map[ i%9 + j*9 ] && !possibleNumber[i][map[i%9 + j*9]-1] ) {
-					howManyImPossible[i]++ ;
-					possibleNumber[i][map[i%9 + j*9]-1] = true ;
-				}
-				location = map[((i/( 9* 3 ))*3+j/3)*9 + ( ( i %9 )/3) * 3+j%3] - 1;
-				if (map[((i/(9*3))*3+j/3)*9 + ((i%9)/3)*3+j%3] && !possibleNumber[i][location]){
-					howManyImPossible[i]++ ;
-					possibleNumber[i][location] = true ;
-				}
-			}
-		}
-	}
-	//enter the answer if there is just one possible number
-	for(int i = 0 ; i < sudokuSize ; i++){	
-		if (!map[i]  && howManyImPossible[i] ==8 ){
-			howManyImPossible[i] = 0 ;
-			nonZero ++;
-			for (int  k = 0 ; k < 9 ; k ++){//find which number should full in
-				if(!possibleNumber[i][k]){
-					map[i] = k +1 ;
-					questionMap[i] = k + 1 ;
-					for(int j = 0  ; j < 9 ; j++){//update the possible imformation
-						if(map[ (i/9) * 9 +j]  && !possibleNumber[i][map[(i/9)*9 + j] - 1 ] ){
-							howManyImPossible[i]++ ;
-							possibleNumber[i][map[(i/9)*9 + j] - 1 ] = true ;
-						}
-						if(map[ i%9 + j*9 ] && !possibleNumber[i][map[i%9 + j*9]-1] )  {
-							howManyImPossible[i]++ ;
-							possibleNumber[i][map[i%9 + j*9]-1] = true ;
-						}
-						location = map[((i/( 9* 3 ))*3+j/3)*9 + ( ( i %9 )/3) * 3+j%3] - 1;
-						if (map[((i/(9*3))*3+j/3)*9 + ((i%9)/3)*3+j%3] && !possibleNumber[i][location]){
-							howManyImPossible[i]++ ;
-							possibleNumber[i][location] = true ;
-						}
-					}
+        }
+        else
+            cout<<numberOfAnswer<<endl;
+    }
 
-				}
-			}
-			i = -1;//restart the loop until there is no any element has just one possible answer
-		}
-	}
-	if(nonZero == 81 ){
-		numberOfAnswer++;
-	}
-
-	solveFunction();
-	//showMap() ;
-	if(numberOfAnswer == 0)
-		cout<<numberOfAnswer<<endl;
-	else if(numberOfAnswer == 1){
-		cout<<numberOfAnswer<<endl;
-		for(int i = 0 ; i < sudokuSize ; ++i)
-		{
-			cout<<answer[i]<<" ";
-			if (i%9 == 8)
-				cout << endl;
-		}
-		
-	}
-	else
-		cout<<numberOfAnswer<<endl;
 }
 void Sudoku::changeNum(int a , int b)
-{	
+{
 	vector<int> indexA,indexB;
 	for(int i = 0 ; i < sudokuSize ; ++i)//find Index of all A
 	{
@@ -255,7 +238,7 @@ void Sudoku::changeCol(int a,int b)
 	{
 		for(int i = 0 ; i < 9 ;++i)
 			map[3*b+ j+ 9*i] = buffer[9*j+i] ;
-	}	
+	}
 }
 void Sudoku::rotate(int  n)//rotate 90 degree
 {
