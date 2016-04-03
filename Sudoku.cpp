@@ -35,11 +35,15 @@ void Sudoku::giveQuestion()
 
 	//random change
 	srand(time(NULL));
-	changeNum(rand()%9 +1 , rand()%9 + 1);
+	int i =0
+	while(i<20){
+    changeNum(rand()%9 +1 , rand()%9 + 1);
 	changeCol(rand()% 3 , rand()% 3);
 	changeRow(rand()% 3 , rand()% 3);
 	rotate(rand()%101);
 	flip(rand()%2);
+	i++;
+	}
 	//dig map
 	int dig_time = 0 ;
 	dig_time = rand () % 81 ;
