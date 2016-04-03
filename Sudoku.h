@@ -7,14 +7,19 @@ public:
     Sudoku();
     static const int sudokuSize = 81;
 
-    void setMap(int index , int value) ;
-    void setQuestionMap(int index ,int value);
-    int    getMap(int index );
-    int    getQuestionMap(int index );
     bool isPossibleAnswer(int index , int value);
-    int getZeroIndex();
+    int  getZeroIndex();
     void showMap();
+    int getQuesMap(int index);
+    int getAnsMap(int index);
+    void setQuesMap(int index ,int value);
+    void setAnsMap(int index ,int value);
+    void setMap(int index ,int value);
     bool isSolvable();
+    bool isCorrect();
+    bool isFinishedMap();
+    bool checkUnity(int arr[]);
+   // bool isSameAns(int arr1[81],int arr2[81]);
 
     void giveQuestion();
     void readIn();
@@ -29,10 +34,7 @@ public:
 
 private:
     int map[sudokuSize];
-    int questionMap[sudokuSize];
-    int numberOfAnswer;
-    int answer[sudokuSize];
-    int nonZero ;
-    int possibleNumber[sudokuSize][9];
-    int howManyImPossible[sudokuSize];
+    int quesMap[sudokuSize];
+    int ansMap[sudokuSize];
+    int numberOfAnswer ;
 };
