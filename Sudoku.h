@@ -20,6 +20,8 @@ public:
     bool isFinishedMap();
     bool checkUnity(int arr[]);
    // bool isSameAns(int arr1[81],int arr2[81]);
+    void solveOne();
+    int updatePossible(int record[81][10]);
 
     void giveQuestion();
     void readIn();
@@ -37,4 +39,5 @@ private:
     int quesMap[sudokuSize];
     int ansMap[sudokuSize];
     int numberOfAnswer ;
+
 };

@@ -266,6 +266,7 @@ void Sudoku::solveFunction(){
         cout<<"2"<<endl;
         exit(1);
     }
+    void solveOne();
     if(zeroIndex == -1){
         if(isCorrect()){
             for(int i = 0;i < 81;i++)
@@ -388,4 +389,65 @@ bool Sudoku::isFinishedMap()
         return false;
     }
     return true;
+}
+
+void Sudoku::solveOne()
+{
+    int record[81][10];
+    for(int i = 0;i < 81;i++){
+        for(int j = 0 ; j < 81;j++){
+            if(j == 0)
+                record[i][j] = 9;
+            else
+                record[i][j] = 1;
+        }
+    }
+    int answer = 0;
+    answer = updatePossible(record);
+    for(int i = 0 ;i < 81 ;i++){
+        if(record[i][0] == 1){
+            record[i][0] = 9;
+            for(int j = 1 ;j <= 9 ;j++){
+                if(record[i][j]){
+                    map[i]=j;
+                    answer = updatePossible(record);
+                }
+            }
+        }
+    i = -1 ;
+    }
+    if (answer == 81 ){
+        if(isFinishedMap())
+            numberOfAnswer ++;
+    }
+}
+
+int Sudoku::updatePossible(int record[81][10])
+{
+    int answer = 0;             //[i][0] is how many possible remain
+                                //[i][1~9] is if number is possible (Y,N)=(1,0)
+    for(int index = 0 ; index < 81 ;index ++)
+    {
+        if(map[index])
+            answer ++;
+        else{
+            for (int i = 0 ;i < 9;i++){
+                int point = map[((index/(9*3))*3+i/3)*9 + ((index%9)/3)*3+i%3];
+
+                if(map[(index/9)*9+i]&& record[index][map[(index/9)*9+i]]){
+                    record[index][0]--;
+                    record[index][map[(index/9)*9+i]] = 0;
+                }
+                else if(map[i*9+index%9]&& record[index][map[i*9+index%9]]){
+                    record[index][0]--;
+                    record[index][map[i*9+index%9]] = 0;
+                }
+                else if(map[((index/27)*3+i/3)*9 + ((index%9)/3)*3+i%3]&& record[index][point]){
+                    record[index][0]--;
+                    record[index][point] = 0;
+                }
+            }
+        }
+    }
+    return answer ;
 }
