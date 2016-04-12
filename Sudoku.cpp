@@ -35,7 +35,7 @@ void Sudoku::giveQuestion()
 
 	//random change
 	srand(time(NULL));
-	int i =0
+	int i =0;
 	while(i<20){
     changeNum(rand()%9 +1 , rand()%9 + 1);
 	changeCol(rand()% 3 , rand()% 3);
